@@ -141,7 +141,8 @@ downloadZipBtn.addEventListener('click', () => {
 
   const zip = new JSZip();
   compressedBlobs.forEach(({ file, name }) => {
-    zip.file(name, file);
+    const newName = name.replace(/\.\w+$/, getExtension(outputFormat.value));
+    zip.file(newName, file);
   });
 
   zip.generateAsync({ type: "blob" }).then(content => {
@@ -154,6 +155,7 @@ downloadZipBtn.addEventListener('click', () => {
 
 function compressImage(file) {
   const targetKB = parseInt(targetSize.value);
+  const format = outputFormat.value;
 
   return new Promise((resolve) => {
     const reader = new FileReader();
@@ -181,14 +183,31 @@ function compressImage(file) {
         let quality = 0.9;
 
         function tryCompress() {
-          canvas.toBlob((blob) => {
-            if ((blob.size / 1024) > targetKB && quality > 0.1) {
-              quality -= 0.05;
-              tryCompress();
-            } else {
-              resolve(blob);
-            }
-          }, outputFormat.value, quality);
+          canvas.toBlob(
+            (blob) => {
+              if (!blob) {
+                Toastify({
+                  text: `❌ Formato ${format} não suportado neste navegador.`,
+                  duration: 4000,
+                  close: true,
+                  gravity: "top",
+                  position: "right",
+                  backgroundColor: "#e74c3c",
+                }).showToast();
+                resolve(new Blob());
+                return;
+              }
+
+              if ((blob.size / 1024) > targetKB && quality > 0.1) {
+                quality -= 0.05;
+                tryCompress();
+              } else {
+                resolve(blob);
+              }
+            },
+            format,
+            quality
+          );
         }
 
         tryCompress();
@@ -197,4 +216,11 @@ function compressImage(file) {
     };
     reader.readAsDataURL(file);
   });
+}
+
+function getExtension(mime) {
+  if (mime === 'image/jpeg') return '.jpg';
+  if (mime === 'image/png') return '.png';
+  if (mime === 'image/webp') return '.webp';
+  return '.img';
 }
