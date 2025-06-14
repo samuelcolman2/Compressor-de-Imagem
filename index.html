@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Compressor de Imagens</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.0/jszip.min.js"></script>
+</head>
+<body data-theme="dark">
+  <button class="theme-toggle" onclick="toggleTheme()">Alternar Tema</button>
+  <header>
+    <h1>Compressor de Imagens</h1>
+    <p>Comprima múltiplas imagens com visualização e controle completo</p>
+  </header>
+  <div class="container">
+    <div class="upload-box">
+      <h2>Upload de Imagens</h2>
+      <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+        <input type="file" id="fileInput" multiple accept="image/*" style="display: none;">
+        <p>📤 Clique para selecionar imagens<br>ou arraste e solte aqui</p>
+      </div>
+    </div>
+    <div class="config-box">
+      <h2>Configurações de Compressão</h2>
+      <input type="number" id="targetSize" placeholder="Tamanho Alvo (KB)" value="500">
+      <select id="outputFormat">
+        <option value="image/jpeg">JPEG</option>
+        <option value="image/png">PNG</option>
+        <option value="image/webp">WEBP</option>
+      </select>
+      <input type="number" id="maxWidth" placeholder="Largura Máxima (px)" value="1920">
+      <input type="number" id="maxHeight" placeholder="Altura Máxima (px)" value="1080">
+      <br>
+      <label><input type="checkbox" id="keepRatio" checked> Manter proporção original</label>
+      <br>
+      <button class="btn" id="compressBtn">Comprimir Imagens</button>
+      <button class="btn btn-download" id="downloadZipBtn">Baixar Tudo em ZIP</button>
+    </div>
+    <div class="preview-box">
+      <button class="btn" id="togglePreviewBtn">Esconder Previews</button>
+      <div id="preview" class="preview-grid"></div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
