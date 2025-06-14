@@ -14,7 +14,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.0/jszip.min.js"></script>
 </head>
 <body>
-  <button class="theme-toggle" onclick="toggleTheme()">Alternar Tema</button>
+  <div class="theme-switch" onclick="toggleTheme()" id="themeToggleBtn">
+    <span class="icon" id="themeIcon">🌙</span>
+  </div>
   <header>
     <h1>Compressor de Imagens</h1>
     <p>Comprima múltiplas imagens com visualização e controle completo</p>

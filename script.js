@@ -16,9 +16,38 @@ let previewsVisible = true;
 
 function toggleTheme() {
   const html = document.documentElement;
-  const current = html.getAttribute("data-theme");
-  html.setAttribute("data-theme", current === "dark" ? "light" : "dark");
+  const isDark = html.getAttribute("data-theme") === "dark";
+  const icon = document.getElementById("themeIcon");
+  const switchBtn = document.getElementById("themeToggleBtn");
+
+  if (isDark) {
+    html.setAttribute("data-theme", "light");
+    icon.textContent = "☀️";
+    switchBtn.style.background = "#ffa500";
+    icon.style.transform = "translateX(30px)";
+  } else {
+    html.setAttribute("data-theme", "dark");
+    icon.textContent = "🌙";
+    switchBtn.style.background = "#333";
+    icon.style.transform = "translateX(0)";
+  }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+  const icon = document.getElementById("themeIcon");
+  const switchBtn = document.getElementById("themeToggleBtn");
+
+  if (isDark) {
+    icon.textContent = "🌙";
+    switchBtn.style.background = "#333";
+    icon.style.transform = "translateX(0)";
+  } else {
+    icon.textContent = "☀️";
+    switchBtn.style.background = "#ffa500";
+    icon.style.transform = "translateX(30px)";
+  }
+});
 
 function removeImage(index) {
   images.splice(index, 1);
