@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Compressor de Imagens</title>
   <link rel="stylesheet" href="style.css">
+
+  <!-- Toastify -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+  <!-- JSZip -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.0/jszip.min.js"></script>
 </head>
 <body>
@@ -36,6 +42,7 @@
       <br>
       <button class="btn" id="compressBtn">Comprimir Imagens</button>
       <button class="btn btn-download" id="downloadZipBtn">Baixar Tudo em ZIP</button>
+      <button class="btn" onclick="clearAll()">Limpar Tudo</button>
     </div>
     <div class="preview-box">
       <button class="btn" id="togglePreviewBtn">Esconder Previews</button>

@@ -16,12 +16,21 @@ let previewsVisible = true;
 
 function toggleTheme() {
   const html = document.documentElement;
-  html.dataset.theme = html.dataset.theme === 'light' ? 'dark' : 'light';
+  const current = html.getAttribute("data-theme");
+  html.setAttribute("data-theme", current === "dark" ? "light" : "dark");
 }
 
 function removeImage(index) {
   images.splice(index, 1);
+  compressedBlobs.splice(index, 1);
   renderPreviews();
+}
+
+function clearAll() {
+  images = [];
+  compressedBlobs = [];
+  preview.innerHTML = '';
+  fileInput.value = '';
 }
 
 function renderPreviews() {
@@ -36,7 +45,12 @@ function renderPreviews() {
       img.src = e.target.result;
 
       const name = document.createElement('p');
-      name.innerText = `${file.name}\nOriginal: ${(file.size / 1024).toFixed(2)} KB`;
+      let text = `${file.name}\nOriginal: ${(file.size / 1024).toFixed(2)} KB`;
+      if (compressedBlobs[index]) {
+        const compSize = (compressedBlobs[index].file.size / 1024).toFixed(2);
+        text += `\nComprimido: ${compSize} KB`;
+      }
+      name.innerText = text;
 
       const delBtn = document.createElement('button');
       delBtn.innerHTML = '&times;';
@@ -70,12 +84,29 @@ compressBtn.addEventListener('click', async () => {
     const compressed = await compressImage(file);
     compressedBlobs.push({ file: compressed, name: file.name });
   }
-  alert('Imagens comprimidas com sucesso!');
+  renderPreviews();
+
+  Toastify({
+    text: "🎉 Imagens comprimidas com sucesso!",
+    duration: 3000,
+    close: true,
+    gravity: "top",
+    position: "right",
+    backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+    stopOnFocus: true,
+  }).showToast();
 });
 
 downloadZipBtn.addEventListener('click', () => {
   if (compressedBlobs.length === 0) {
-    alert('Nenhuma imagem comprimida disponível. Por favor, comprima primeiro.');
+    Toastify({
+      text: "⚠️ Nenhuma imagem comprimida disponível.",
+      duration: 3000,
+      close: true,
+      gravity: "top",
+      position: "right",
+      backgroundColor: "#e74c3c",
+    }).showToast();
     return;
   }
 
@@ -93,6 +124,8 @@ downloadZipBtn.addEventListener('click', () => {
 });
 
 function compressImage(file) {
+  const targetKB = parseInt(targetSize.value);
+
   return new Promise((resolve) => {
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -116,11 +149,20 @@ function compressImage(file) {
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
 
-        canvas.toBlob(
-          (blob) => resolve(blob),
-          outputFormat.value,
-          0.7 // Qualidade de compressão (0 a 1)
-        );
+        let quality = 0.9;
+
+        function tryCompress() {
+          canvas.toBlob((blob) => {
+            if ((blob.size / 1024) > targetKB && quality > 0.1) {
+              quality -= 0.05;
+              tryCompress();
+            } else {
+              resolve(blob);
+            }
+          }, outputFormat.value, quality);
+        }
+
+        tryCompress();
       };
       img.src = event.target.result;
     };
